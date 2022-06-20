@@ -86,7 +86,7 @@ def main(page):
             page.add(Message(value='Dodano klienta', dismiss=True, type='success'))
             
         elif tabele.createClient(wpisSQL) == False:
-            page.add(Message(value='Błąd podczas dodawania klienta', dismiss=True, type='error'))
+            page.add(Message(value='Błąd podczas dodawania klienta - prawdopodobnie klient istnieje w bazie', dismiss=True, type='error'))
             
         getName.value=''
         getAdres.value=''
