@@ -398,7 +398,7 @@ def main(page):
             ),
         )
 
-    insure_grid = 
+    #insure_grid = 
 
     
 #--------FORMULARZ DODAWANIA KLIENTA
