@@ -6,6 +6,8 @@ import pglet
 from pglet import Button, Checkbox, Column, Grid, Stack, Textbox, Text, Toolbar, toolbar, Dropdown, dropdown, Tabs, Tab, Panel, DatePicker, Html, Message, Dialog
 import dbcon
 from dbcon import *
+import identcheck
+from identcheck import checkPesel, checkRegon
 
 class Person:
     def __init__(self,SQLID:int, name: str, adres: str, mail: str, phone: str, type: str, ident: str):
