@@ -31,7 +31,7 @@ def checkRegon(regon):
     else:
         return False
 
-def main(ident):    
+def mainCheck(ident):    
     if len(ident)==11:
         return(checkPesel(ident))
     else:

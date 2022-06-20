@@ -7,7 +7,7 @@ from pglet import Button, Checkbox, Column, Grid, Stack, Textbox, Text, Toolbar,
 import dbcon
 from dbcon import *
 import identcheck
-from identcheck import checkPesel, checkRegon
+from identcheck import mainCheck
 
 class Person:
     def __init__(self,SQLID:int, name: str, adres: str, mail: str, phone: str, type: str, ident: str):
@@ -65,8 +65,19 @@ def main(page):
             nextnumber = 1
         else:
             nextnumber = klienci[-1][0]+1
-        grid.items.append(
-            Person(
+        
+
+        
+        wpis = [nextnumber,getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
+        
+        wpisSQL=[getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
+        #tabele.createClient(wpisSQL)
+        if mainCheck(getIdent.value)==True:
+            if tabele.createClient(wpisSQL) == True:
+                klienci.append(wpis)
+                page.add(Message(value='Dodano klienta', dismiss=True, type='success'))
+                grid.items.append(
+                Person(
                 SQLID=nextnumber,
                 name = getName.value,
                 adres = getAdres.value,
@@ -77,19 +88,10 @@ def main(page):
             ),
             
         )
-
-        
-        wpis = [nextnumber,getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
-        
-        wpisSQL=[getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
-        #tabele.createClient(wpisSQL)
-        if tabele.createClient(wpisSQL) == True:
-            klienci.append(wpis)
-            page.add(Message(value='Dodano klienta', dismiss=True, type='success'))
-            
-        elif tabele.createClient(wpisSQL) == False:
-            page.add(Message(value='Błąd podczas dodawania klienta - prawdopodobnie klient istnieje w bazie', dismiss=True, type='error'))
-            
+            elif tabele.createClient(wpisSQL) == False:
+                page.add(Message(value='Błąd podczas dodawania klienta - prawdopodobnie klient istnieje w bazie', dismiss=True, type='error'))
+        elif mainCheck(getIdent.value)==False:
+            page.add(Message(value='Niepoprawny nr PESE/REGON', dismiss=True, type='error'))
         getName.value=''
         getAdres.value=''
         getMail.value=''
