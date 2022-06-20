@@ -3,7 +3,7 @@ from matplotlib.pyplot import text
 from numpy import double
 
 import pglet
-from pglet import Button, Checkbox, Column, Grid, Stack, Textbox, Text, Toolbar, toolbar, Dropdown, dropdown, Tabs, Tab, Panel, DatePicker, Html, Message
+from pglet import Button, Checkbox, Column, Grid, Stack, Textbox, Text, Toolbar, toolbar, Dropdown, dropdown, Tabs, Tab, Panel, DatePicker, Html, Message, Dialog
 import dbcon
 from dbcon import *
 
@@ -80,13 +80,14 @@ def main(page):
         wpis = [nextnumber,getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
         
         wpisSQL=[getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
-        tabele.createClient(wpisSQL)
+        #tabele.createClient(wpisSQL)
         if tabele.createClient(wpisSQL) == True:
             klienci.append(wpis)
-            page.add(Message(value='Dodano klienta', dismiss=True, type='succes'))
+            page.add(Message(value='Dodano klienta', dismiss=True, type='success'))
             
         elif tabele.createClient(wpisSQL) == False:
             page.add(Message(value='Błąd podczas dodawania klienta', dismiss=True, type='error'))
+            
         getName.value=''
         getAdres.value=''
         getMail.value=''
