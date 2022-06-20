@@ -1,4 +1,5 @@
 
+
 def checkPesel(pesel):
     controlNumbers = [1,3,7,9,1,3,7,9,1,3,1]
     tempNumber=[]
@@ -29,5 +30,10 @@ def checkRegon(regon):
         return True
     else:
         return False
-    
+
+def main(ident):    
+    if len(ident)==11:
+        return(checkPesel(ident))
+    else:
+        return(checkRegon(ident))
 
