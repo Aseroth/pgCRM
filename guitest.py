@@ -465,7 +465,7 @@ def main(page):
                 controls=[
                     grid_toolbar,
                     grid,
-                    Text("Dodaj klienta", size='medium'),
+                    Text("Zapisz klienta", size='medium'),
                     Stack(horizontal=True, controls=[
                             getName,
                             getAdres,
@@ -473,7 +473,7 @@ def main(page):
                             getPhone,
                             getIdent,
                             getType,
-                            Button('Dodaj klienta', on_click=add_client),
+                            Button('Zapisz klienta', on_click=add_client),
                         ]),
                     
                 ]),

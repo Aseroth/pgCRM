@@ -18,7 +18,7 @@ What needs to be done:
 - e-mail delivery
 - statistics
 - reminders
-
+- code is sketchy so it needs a cleanup or full rewrite 
 
 Currently program works using sqlite3 database. Ultimately it will work on mysql database.
 
