@@ -20,7 +20,7 @@ What needs to be done:
 - reminders
 
 
-Currently program works in sqlite3 database. Ultimately it will work on mysql database.
+Currently program works using sqlite3 database. Ultimately it will work on mysql database.
 
 
 
