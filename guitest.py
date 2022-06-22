@@ -68,36 +68,36 @@ def main(page):
         
 
         
-        wpis = [nextnumber,getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
+        wpis = [nextnumber,nameClient.value, adresClient.value, phoneClient.value, mailClient.value, identClient.value, typeClient.value]
         
-        wpisSQL=[getName.value, getAdres.value, getPhone.value, getMail.value, getIdent.value, getType.value]
+        wpisSQL=[nameClient.value, adresClient.value, phoneClient.value, mailClient.value, identClient.value, typeClient.value]
         #tabele.createClient(wpisSQL)
-        if mainCheck(getIdent.value)==True:
+        if mainCheck(identClient.value)==True:
             if tabele.createClient(wpisSQL) == True:
                 klienci.append(wpis)
                 page.add(Message(value='Dodano klienta', dismiss=True, type='success'))
                 grid.items.append(
                 Person(
                 SQLID=nextnumber,
-                name = getName.value,
-                adres = getAdres.value,
-                mail = getMail.value,
-                phone = getPhone.value,
-                ident = getIdent.value,
-                type = getType.value,
+                name = nameClient.value,
+                adres = adresClient.value,
+                mail = mailClient.value,
+                phone = phoneClient.value,
+                ident = identClient.value,
+                type = typeClient.value,
             ),
             
         )
             elif tabele.createClient(wpisSQL) == False:
                 page.add(Message(value='Błąd podczas dodawania klienta - prawdopodobnie klient istnieje w bazie', dismiss=True, type='error'))
-        elif mainCheck(getIdent.value)==False:
+        elif mainCheck(identClient.value)==False:
             page.add(Message(value='Niepoprawny nr PESE/REGON', dismiss=True, type='error'))
-        getName.value=''
-        getAdres.value=''
-        getMail.value=''
-        getPhone.value=''
-        getIdent.value=''
-        getType.value=''
+        nameClient.value=''
+        adresClient.value=''
+        mailClient.value=''
+        phoneClient.value=''
+        identClient.value=''
+        typeClient.value=''
         
         page.update()
         
@@ -196,6 +196,29 @@ def main(page):
         panelInstalments.value=polisy[id][7]
 
         page.update()
+
+#----------PANEL DODAWANIA EDYTOWANIA KLIENTA
+    nameClient = Textbox(placeholder='Nazwa klienta')
+    adresClient = Textbox(placeholder='Adres klienta')
+    mailClient = Textbox(placeholder='Mail klienta')
+    phoneClient = Textbox(placeholder='Telefon klienta')
+    identClient = Textbox(placeholder='Pesel/Regon klienta')
+    typeClient = Dropdown(width=180, options=[
+        dropdown.Option('Osoba fizyczna'),
+        dropdown.Option('Osoba prawna'),
+        dropdown.Option('Osoba fizyczna prowadząca działalność gospodarczą')
+    ])
+
+    clientPanel = Panel(title='Zapisz klienta', controls=[
+        nameClient,
+        adresClient,
+        mailClient,
+        mailClient,
+        phoneClient,
+        identClient,
+        typeClient,
+        Button('Zapisz')
+    ])
 
 #-------PANEL DODAWANIE POLISY
     nrPolisy = Textbox(placeholder='Nr polisy')
@@ -492,6 +515,7 @@ def main(page):
         mainMenu,
         insurePanel,
         insureViewPanel,
+        clientPanel,
         
     )
 
