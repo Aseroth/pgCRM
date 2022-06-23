@@ -60,6 +60,10 @@ def main(page):
 
 
     #--------DODAWANIE KLIENTÓW DO BAZY
+    def add_client_panel(e):
+        clientPanel.open=True
+        page.update()
+
     def add_client(e):
         if len(klienci)==0:
             nextnumber = 1
@@ -71,7 +75,7 @@ def main(page):
         wpis = [nextnumber,nameClient.value, adresClient.value, phoneClient.value, mailClient.value, identClient.value, typeClient.value]
         
         wpisSQL=[nameClient.value, adresClient.value, phoneClient.value, mailClient.value, identClient.value, typeClient.value]
-        #tabele.createClient(wpisSQL)
+        
         if mainCheck(identClient.value)==True:
             if tabele.createClient(wpisSQL) == True:
                 klienci.append(wpis)
@@ -123,12 +127,32 @@ def main(page):
         przypis.value=''
         platnosc.value=''
         page.update()
+
+    def edit_entry_panel(e):
+        edit_clientPanel.open=True
+        for choice in grid.selected_items:
+            nrWpisu=choice.SQLID
+            
+        editedCLient = tabele.searchClientById(nrWpisu)
+        idEdit = nrWpisu-1
         
+        edit_nameClient.value=editedCLient[idEdit][1]
+        edit_adresClient.value=editedCLient[idEdit][2]
+        edit_phoneClient.value=editedCLient[idEdit][3]
+        edit_mailClient.value=editedCLient[idEdit][4]
+        edit_identClient.value=editedCLient[idEdit][5]
+        edit_typeClient.value=editedCLient[idEdit][6]
+        page.update()
         
     def edit_entry(e):
         for choice in grid.selected_items:
             nrWpisu=choice.SQLID
+        idEdit = int(nrWpisu)-1
             # TODO do uzupełnienia -> zaczytać dane z wybranego wpisu <- odwołać się do danych z SQL, dodać funkcje zapisu, możma zrobić panelem
+        dataToUpdate = (edit_nameClient.value, edit_adresClient.value, edit_phoneClient.value, edit_mailClient.value, edit_identClient.value, edit_typeClient.value, idEdit)
+        tabele.updateClient(dataToUpdate)
+        page.update()
+        grid.update()
 
     def save_insure(e):
         
@@ -197,7 +221,7 @@ def main(page):
 
         page.update()
 
-#----------PANEL DODAWANIA EDYTOWANIA KLIENTA
+#----------PANEL DODAWANIA KLIENTA
     nameClient = Textbox(placeholder='Nazwa klienta')
     adresClient = Textbox(placeholder='Adres klienta')
     mailClient = Textbox(placeholder='Mail klienta')
@@ -213,11 +237,32 @@ def main(page):
         nameClient,
         adresClient,
         mailClient,
-        mailClient,
         phoneClient,
         identClient,
         typeClient,
-        Button('Zapisz')
+        Button('Zapisz', on_click=add_client)
+    ])
+
+#---------PANEL EDYTOWANIA KLIENTA
+    edit_nameClient = Textbox(placeholder='Nazwa klienta')
+    edit_adresClient = Textbox(placeholder='Adres klienta')
+    edit_mailClient = Textbox(placeholder='Mail klienta')
+    edit_phoneClient = Textbox(placeholder='Telefon klienta')
+    edit_identClient = Textbox(placeholder='Pesel/Regon klienta')
+    edit_typeClient = Dropdown(width=180, options=[
+        dropdown.Option('Osoba fizyczna'),
+        dropdown.Option('Osoba prawna'),
+        dropdown.Option('Osoba fizyczna prowadząca działalność gospodarczą')
+    ])
+
+    edit_clientPanel = Panel(title='Zapisz klienta', controls=[
+        edit_nameClient,
+        edit_adresClient,
+        edit_mailClient,
+        edit_phoneClient,
+        edit_identClient,
+        edit_typeClient,
+        Button('Zapisz', on_click=edit_entry)
     ])
 
 #-------PANEL DODAWANIE POLISY
@@ -343,12 +388,16 @@ def main(page):
         text='Polisy klienta', icon='ExploreContent', disabled=True, on_click=show_insures
     )
     edit_client = toolbar.Item(
-        text='Edytuj klienta', icon='Edit', disabled=True, on_click=edit_entry
+        text='Edytuj klienta', icon='Edit', disabled=True, on_click=edit_entry_panel
     )
     delete_client = toolbar.Item(
         text='Usuń klienta', icon='Delete', disabled=True, on_click=delete_client_entry)
+    
+    add_new_client = toolbar.Item(
+        text='Dodaj klienta', icon='AddFriend', disabled=False, on_click=add_client_panel
+    )
 
-    grid_toolbar = Toolbar(items=[add_policy, show_policy, edit_client, delete_client])
+    grid_toolbar = Toolbar(items=[add_new_client,add_policy, show_policy, edit_client, delete_client])
     
 #---------------- TABELA KLIENTÓW
 
@@ -426,22 +475,6 @@ def main(page):
             ),
         )
 
-    #insure_grid = 
-
-    
-#--------FORMULARZ DODAWANIA KLIENTA
-    
-    getName = Textbox(placeholder='Nazwa klienta')
-    getAdres = Textbox(placeholder='Adres klienta')
-    getMail = Textbox(placeholder='Mail klienta')
-    getPhone = Textbox(placeholder='Telefon klienta')
-    getIdent = Textbox(placeholder='Pesel/Regon klienta')
-    getType = Dropdown(width=180, options=[
-            dropdown.Option('Osoba fizyczna'),
-            dropdown.Option('Osoba Prawna'),
-            dropdown.Option('Jednoosobowa działalnośc gosp.'),
-            ])
-    
 
 
 
@@ -488,16 +521,7 @@ def main(page):
                 controls=[
                     grid_toolbar,
                     grid,
-                    Text("Zapisz klienta", size='medium'),
-                    Stack(horizontal=True, controls=[
-                            getName,
-                            getAdres,
-                            getMail,
-                            getPhone,
-                            getIdent,
-                            getType,
-                            Button('Zapisz klienta', on_click=add_client),
-                        ]),
+                   
                     
                 ]),
             Tab(
@@ -516,8 +540,9 @@ def main(page):
         insurePanel,
         insureViewPanel,
         clientPanel,
+        edit_clientPanel,
         
     )
 
-print(datetime.now)
+
 pglet.app('test-crm', target=main)

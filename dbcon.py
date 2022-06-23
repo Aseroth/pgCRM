@@ -172,7 +172,9 @@ class Connection:
                 SET name = ?,
                     adres = ?,
                     phone = ?, 
-                    mail = ?
+                    mail = ?,
+                    ident = ?,
+                    type = ?
                 WHERE id = ?'''
         self.cur = self.conn.cursor()
         self.cur.execute(sql, client)
@@ -251,6 +253,15 @@ class Connection:
 
         for row in self.rows:
             print(row)
+    
+    def searchClientById(self, clientId):
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT * FROM client WHERE id = ?", (clientId,))
+        self.rows = self.cur.fetchall()
+        self.editClient = []
+        
+        
+        return self.rows
     
     def serachPolicy(self, number):
         self.cur = self.conn.cursor()
