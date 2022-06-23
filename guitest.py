@@ -147,9 +147,8 @@ def main(page):
     def edit_entry(e):
         for choice in grid.selected_items:
             nrWpisu=choice.SQLID
-        idEdit = int(nrWpisu)-1
-            # TODO do uzupełnienia -> zaczytać dane z wybranego wpisu <- odwołać się do danych z SQL, dodać funkcje zapisu, możma zrobić panelem
-        dataToUpdate = (edit_nameClient.value, edit_adresClient.value, edit_phoneClient.value, edit_mailClient.value, edit_identClient.value, edit_typeClient.value, idEdit)
+        
+        dataToUpdate = (edit_nameClient.value, edit_adresClient.value, edit_phoneClient.value, edit_mailClient.value, edit_identClient.value, edit_typeClient.value, nrWpisu)
         tabele.updateClient(dataToUpdate)
         page.update()
         grid.update()
