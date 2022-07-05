@@ -44,7 +44,7 @@ carTable = '''CREATE TABLE IF NOT EXISTS cars(
                 UNIQUE(carReg, carVin)
                 );'''
 
-instalmentsTable = '''CREATE TABLE IF NOT EXITST instalments(
+instalmentsTable = '''CREATE TABLE IF NOT EXISTS instalments(
                 id integer PRIMARY KEY,
                 instalmentsNumber integer,
                 paid bool,
@@ -134,12 +134,12 @@ class Connection:
             self.cur = self.conn.cursor()
             self.cur.execute(sql, policy)
             self.conn.commit()
-            state = True
+            print (self.cur.lastrowid)
         except Error as err:
             print(err)
-            state = False
-        return state
-        #return self.cur.lastrowid
+            
+        
+        return self.cur.lastrowid
     
     def createCar(self, carData):
         sql = '''INSERT INTO cars (carType, carMake, carModel, carYear, carReg, carVin, policy_id) VALUES (?,?,?,?,?,?,?)'''
@@ -179,6 +179,8 @@ class Connection:
         self.cur = self.conn.cursor()
         self.cur.execute(sql, client)
         self.conn.commit
+        
+        return self.cur
 
     def updatePolicy(self, policy):
         sql = ''' UPDATE policy
@@ -241,10 +243,27 @@ class Connection:
         for row in data:
             self.policy.append(row)
 
-        #for x in self.policy:
-        #    print(*x)
-
         return self.policy
+
+    def printInstalments(self):
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT * FROM instalments")
+        data = self.cur.fetchall()
+        self.instalmentsList = []
+        for row in data:
+            self.instalmentsList.append(row)
+
+        return self.instalmentsList
+    
+    def printCars(self):
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT * FROM cars")
+        data = self.cur.fetchall()
+        self.carsList = []
+        for row in data:
+            self.carsList.append(row)
+
+        return self.carsList
 
     def searchClient(self, name):
         self.cur = self.conn.cursor()

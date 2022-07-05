@@ -30,17 +30,30 @@ class Polisa:
         self.przypis = przypis
         self.player = platnosc
 
-#class Pojazd:
-    #def __
+class InstalmentsGrid:
+    def __init__(self, iSQLID: int,iname: str, InumerPolisy: str, liczbarat: int):
+        self.iSQLID = iSQLID
+        self.iname = iname
+        self. InumerPolisy = InumerPolisy
+        self.liczbarat = liczbarat
+
+class Pojazd:
+    def __init__(self, cSQLID: int, name: str, numerPolisy: str, nrRej: str):
+        self.cSQLID = cSQLID
+        self.name = name
+        self.numerPolisy = numerPolisy
+        self.nrRej = nrRej
+
 
 def main(page):
 #-----------------USTAWIENIE POŁĄCZENIA Z BAZĄ--------------------------------
     tabele = Connection()
     tabele.createTable_clients()
     tabele.createTable_insure()
-
+    tabele.createTable_car()
+    tabele.createTable_instalments()
+#-----------------UZUPEŁNIANIE LIST KLIENTÓW, POLIS, RAT, AUT
     klienci = []
-    
     if len(list(tabele.printClients()))>0:
         for x in range(len(list(tabele.printClients()))):
             klienci.append(list(tabele.printClients()[x]))
@@ -49,6 +62,16 @@ def main(page):
     if len(list(tabele.printPolicy()))>0:
         for x in range(len(list(tabele.printPolicy()))):
             polisyLista.append(list(tabele.printPolicy()[x]))
+
+    ratyLista = []
+    if len(list(tabele.printInstalments()))>0:
+        for x in range(len(list(tabele.printInstalments()))):
+            ratyLista.append(list(tabele.printInstalments()[x]))
+
+    autaLista = []
+    if len(list(tabele.printCars()))>0:
+        for x in range(len(list(tabele.printCars()))):
+            autaLista.append(tabele.printCars()[x])
 
 #----------------------------------------------------            
     page.title = 'CRM'
@@ -127,6 +150,7 @@ def main(page):
         przypis.value=''
         platnosc.value=''
         page.update()
+        polisyGrid.update()
 
     def edit_entry_panel(e):
         edit_clientPanel.open=True
@@ -153,16 +177,22 @@ def main(page):
         page.update()
         grid.update()
 
+    
+
     def save_insure(e):
         
         for choice in grid.selected_items:
             nrWpisu=choice.SQLID
         
         policyData = (nrPolisy.value, rodzajPolisy.value, towarzystwo.value, startPolisy.value, koniecPolisy.value, int(przypis.value), int(platnosc.value), nrWpisu)
-        tabele.createPolicy(policyData)
+        if int(platnosc.value)>1:
+            platnosci = (platnosc.value, None, tabele.createPolicy(policyData))
+            tabele.createInstalment(platnosci)
         polisaLista = (nrPolisy.value, rodzajPolisy.value, towarzystwo.value, startPolisy.value, koniecPolisy.value, int(przypis.value), int(platnosc.value))
         polisyLista.append(polisaLista)
+        
         page.update()
+        polisyGrid.update()
 
     def delete_client_entry(e):
         for choice in grid.selected_items:
@@ -475,7 +505,30 @@ def main(page):
         )
 
 
+#-----------TABELA RAT
+    gridInstalments = Grid(
+        selection_mode='single',
+        compact=True,
+        header_visible=True,
+        columns=[
+            Column(resizable=True, name='ID', template_controls=[Text(value='{iSQLID}')]),
+            Column(resizable=True, name='Klient', template_controls=[Text(value='{iname}')]),
+            Column(resizable=True, name='Numer polisy', template_controls=[Text(value='{inumerPolisy}')]),
+            Column(resizable=True, name='Liczba rat', template_controls=[Text(value='{liczbarat}')]),
+        ],
+        items = [
 
+        ],
+        margin=0,
+    )
+
+    for x in range(len(ratyLista)):
+        gridInstalments.items.append(
+            InstalmentsGrid(
+                iSQLID=ratyLista[x][0],
+                # dopisać do klasy pobieranie danych z klientów i polis odpowienidio imie i nr polisy
+            )
+        )
 
 #---------------STRONA GŁÓWNA---------------
 
