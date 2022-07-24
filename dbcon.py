@@ -49,7 +49,9 @@ instalmentsTable = '''CREATE TABLE IF NOT EXISTS instalments(
                 instalmentsNumber integer,
                 paid bool,
                 policy_id integer,
-                FOREIGN KEY(policy_id) REFERENCES policy(id)
+                client_id integer,
+                FOREIGN KEY(policy_id) REFERENCES policy(id),
+                FOREIGN KEY(client_id) REFERENCES clients(id)
                 );'''
 
  #<---  TODO do uzupełenienia albo tabela z polisami o pojazd albo stworzyć tabele ubezpieczanych przedmiotów 9Pojazdy/nieruchomość )
@@ -156,7 +158,7 @@ class Connection:
         #return self.cur.lastrowid
 
     def createInstalment(self, instalmentData):
-        sql = '''INSERT INTO instalments (instalmentsNumber, paid, policy_id ) VALUES (?,?,?)'''
+        sql = '''INSERT INTO instalments (instalmentsNumber, paid, policy_id, client_id ) VALUES (?,?,?,?)'''
         try:
             self.cur = self.conn.cursor()
             self.cur.execute(sql, instalmentData)
@@ -178,7 +180,7 @@ class Connection:
                 WHERE id = ?'''
         self.cur = self.conn.cursor()
         self.cur.execute(sql, client)
-        self.conn.commit
+        self.conn.commit()
         
         return self.cur
 
@@ -278,9 +280,10 @@ class Connection:
         self.cur.execute("SELECT * FROM client WHERE id = ?", (clientId,))
         self.rows = self.cur.fetchall()
         self.editClient = []
-        
-        
-        return self.rows
+        for row in self.rows:
+            self.editClient.append(row)
+        print(self.editClient)
+        return self.editClient
     
     def serachPolicy(self, number):
         self.cur = self.conn.cursor()
@@ -299,4 +302,14 @@ class Connection:
             self.clientPolicy.append(row)
 
         return self.clientPolicy
+
+    def searchPolicybyId(self, id):
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT * FROM policy WHERE id = ?",(id,))
+        self.rows = self.cur.fetchall()
+        self.clientPolicybyId = []
+        for row in self.rows:
+            self.clientPolicybyId.append(row)
+        
+        return self.clientPolicybyId
 

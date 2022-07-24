@@ -31,9 +31,10 @@ class Polisa:
         self.player = platnosc
 
 class InstalmentsGrid:
-    def __init__(self, iSQLID: int,iname: str, InumerPolisy: str, liczbarat: int):
+    def __init__(self, iSQLID: int, Iname: str, InumerPolisy: str, Itowarzystwo: str, liczbarat: int):
         self.iSQLID = iSQLID
-        self.iname = iname
+        self.Iname = Iname
+        self.Itowarzystwo = Itowarzystwo
         self. InumerPolisy = InumerPolisy
         self.liczbarat = liczbarat
 
@@ -44,6 +45,7 @@ class Pojazd:
         self.numerPolisy = numerPolisy
         self.nrRej = nrRej
 
+klienci = []
 
 def main(page):
 #-----------------USTAWIENIE POŁĄCZENIA Z BAZĄ--------------------------------
@@ -53,10 +55,15 @@ def main(page):
     tabele.createTable_car()
     tabele.createTable_instalments()
 #-----------------UZUPEŁNIANIE LIST KLIENTÓW, POLIS, RAT, AUT
-    klienci = []
-    if len(list(tabele.printClients()))>0:
-        for x in range(len(list(tabele.printClients()))):
-            klienci.append(list(tabele.printClients()[x]))
+    
+    
+    def klient_lista():
+        global klienci
+        klienci.clear()
+        if len(list(tabele.printClients()))>0:
+            for x in range(len(list(tabele.printClients()))):
+                klienci.append(list(tabele.printClients()[x]))
+        return klienci
     
     polisyLista = []
     if len(list(tabele.printPolicy()))>0:
@@ -88,6 +95,7 @@ def main(page):
         page.update()
 
     def add_client(e):
+        klient_lista()
         if len(klienci)==0:
             nextnumber = 1
         else:
@@ -172,8 +180,9 @@ def main(page):
         for choice in grid.selected_items:
             nrWpisu=choice.SQLID
         
-        dataToUpdate = (edit_nameClient.value, edit_adresClient.value, edit_phoneClient.value, edit_mailClient.value, edit_identClient.value, edit_typeClient.value, nrWpisu)
+        dataToUpdate = (edit_nameClient.value, edit_adresClient.value, edit_phoneClient.value, edit_mailClient.value, edit_identClient.value, edit_typeClient.value, int(nrWpisu))
         tabele.updateClient(dataToUpdate)
+        klient_lista()
         page.update()
         grid.update()
 
@@ -186,7 +195,7 @@ def main(page):
         
         policyData = (nrPolisy.value, rodzajPolisy.value, towarzystwo.value, startPolisy.value, koniecPolisy.value, int(przypis.value), int(platnosc.value), nrWpisu)
         if int(platnosc.value)>1:
-            platnosci = (platnosc.value, None, tabele.createPolicy(policyData))
+            platnosci = (platnosc.value, None, tabele.createPolicy(policyData), nrWpisu)
             tabele.createInstalment(platnosci)
         polisaLista = (nrPolisy.value, rodzajPolisy.value, towarzystwo.value, startPolisy.value, koniecPolisy.value, int(przypis.value), int(platnosc.value))
         polisyLista.append(polisaLista)
@@ -261,7 +270,7 @@ def main(page):
         dropdown.Option('Osoba prawna'),
         dropdown.Option('Osoba fizyczna prowadząca działalność gospodarczą')
     ])
-
+    saveButton = Button('Zapisz', on_click=add_client)
     clientPanel = Panel(title='Zapisz klienta', controls=[
         nameClient,
         adresClient,
@@ -269,7 +278,7 @@ def main(page):
         phoneClient,
         identClient,
         typeClient,
-        Button('Zapisz', on_click=add_client)
+        saveButton,
     ])
 
 #---------PANEL EDYTOWANIA KLIENTA
@@ -453,6 +462,7 @@ def main(page):
 #-----------------------------------------
 
 #----- UZUPEŁNIANIE TABELI WPISAMI Z BAZY SQLITE
+    klient_lista()
     for x in range(len(klienci)):
         grid.items.append(
             Person(
@@ -512,8 +522,9 @@ def main(page):
         header_visible=True,
         columns=[
             Column(resizable=True, name='ID', template_controls=[Text(value='{iSQLID}')]),
-            Column(resizable=True, name='Klient', template_controls=[Text(value='{iname}')]),
-            Column(resizable=True, name='Numer polisy', template_controls=[Text(value='{inumerPolisy}')]),
+            Column(resizable=True, name='Klient', template_controls=[Text(value='{Iname}')]),
+            Column(resizable=True, name='Numer polisy', template_controls=[Text(value='{InumerPolisy}')]),
+            Column(resizable=True, name='Towarzystwo', template_controls=[Text(value='{Itworzystwo}')]),
             Column(resizable=True, name='Liczba rat', template_controls=[Text(value='{liczbarat}')]),
         ],
         items = [
@@ -526,13 +537,17 @@ def main(page):
         gridInstalments.items.append(
             InstalmentsGrid(
                 iSQLID=ratyLista[x][0],
+                Iname=tabele.searchClientById(ratyLista[x][3]),
+                InumerPolisy=tabele.searchPolicybyId(ratyLista[x][3])[0][1], #<-pobiera tupke wliscie z sql i wybieramy 0 index z listy i 1 index z tupki
+                Itowarzystwo=tabele.searchPolicybyId(ratyLista[x][3])[0][3],
+                liczbarat=ratyLista[x][1],
                 # dopisać do klasy pobieranie danych z klientów i polis odpowienidio imie i nr polisy
             )
-        )
-
+      )
+    
 #---------------STRONA GŁÓWNA---------------
 
-    liczba_klientow = len(klienci)
+    
     data = datetime.now()
     day = data.day
     month = data.month
@@ -564,7 +579,7 @@ def main(page):
                     ],
                     ),
                 ],
-            
+             
             ),
             Tab(
                 text='Klienci',
@@ -584,6 +599,12 @@ def main(page):
                     polisyGrid,
                 ],
                 ),
+            Tab(
+                text='Raty',
+                icon='Money',
+                controls=[
+                    gridInstalments,
+                ]),
         ]
     )
 
