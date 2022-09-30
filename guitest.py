@@ -28,7 +28,7 @@ class Polisa:
         self.start = start
         self.koniec = koniec
         self.przypis = przypis
-        self.player = platnosc
+        self.platnosc = platnosc
 
 class InstalmentsGrid:
     def __init__(self, iSQLID: int, Iname: str, InumerPolisy: str, Itowarzystwo: str, liczbarat: int):
